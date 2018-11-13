@@ -48,6 +48,7 @@ def checkFood(snakeObject):
 	to fix this so it doesn't make food over an occupied square.
 	'''
 	if snakeObject.positionX == food[0] and snakeObject.positionY == food[1]:
+		#return True
 		snakeObject.eat()
 		makeFood(random.randint(0,n-1),random.randint(0,n-1))
 

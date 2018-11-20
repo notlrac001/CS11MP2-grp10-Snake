@@ -11,14 +11,13 @@ class Segment:
 
 	def __init__(self,x,y,direction):
 
-		#Currently still called red for no real reason. Just fix later
-		red = pyglet.image.load('square.png')
-		red.width = 40
-		red.height = 40
-		red.anchor_x = 20
-		red.anchor_y = 20
+		seg = pyglet.image.load('square.png')
+		seg.width = 40
+		seg.height = 40
+		seg.anchor_x = 20
+		seg.anchor_y = 20
 
-		self.segmentSprite = pyglet.sprite.Sprite(red)
+		self.segmentSprite = pyglet.sprite.Sprite(seg)
 		self.segmentSprite.x = x
 		self.segmentSprite.y = y
 		self.direction = direction

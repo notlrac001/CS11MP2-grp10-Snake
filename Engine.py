@@ -4,39 +4,35 @@ import time
 import random
 
 #size of grid nxn
-n = 13
+n = 16
 
 grid = list()
-food = tuple()
 
-for i in range(n):
-	grid.append(list())
-	for j in range(n):
-		grid[i].append(".")
+#For now food is a tuple. Could make a spearate object for a separate sprite if there is time.
+food = tuple()
 
 def checkCollision(snakeObject,otherSnakeObject = None):
 	'''
 	Checks the collisions of the snake with the bounds, or itself
 	'''
 	if snakeObject.positionX < 0:
-		quit()
+		print("collision")
 		return True
 	if snakeObject.positionY < 0:
-		quit()
+		print("collision")
 		return True
 	if snakeObject.positionX >= n:
-		quit()
+		print("collision")
 		return True
 	if snakeObject.positionY >= n:
-		quit()
+		print("collision")
 		return True
 	if (snakeObject.positionX,snakeObject.positionY) in snakeObject.squaresoccupied:
-		quit()
+		print("collision with self")
 		return True
 	if otherSnakeObject != None:
 		if (snakeObject.positionX,snakeObject.positionY) in otherSnakeObject.squaresoccupied:
 			print(otherSnakeObject.playerName + " wins")
-			quit()
 			return True
 	else:
 		return False
@@ -50,14 +46,32 @@ def checkFood(snakeObject):
 	if snakeObject.positionX == food[0] and snakeObject.positionY == food[1]:
 		#return True
 		snakeObject.eat()
-		makeFood(random.randint(0,n-1),random.randint(0,n-1))
+		makeFood(snakeObject)
 
-def makeFood(x,y):
+def makeFood(snakeObject):
 	'''
 	Sets the coordinates of food.
 	'''
 	global food
-	food = (x,y)
+	temp = tuple((random.randint(0,n-1),random.randint(0,n-1)))
+
+	while temp in snakeObject.squaresoccupied:
+		temp = tuple((random.randint(0,n-1),random.randint(0,n-1)))
+
+	food = temp
+
+
+def translatePositionX(x):
+	'''
+	Translates the x coordinate to match the coordinate system of Pyglet.
+	'''
+	return 340+(x*40)
+
+def translatePositionY(y):
+	'''
+	Translates the y coordinate to match the coordinate system of Pyglet.
+	'''
+	return 60+(y*40)
 
 	
 

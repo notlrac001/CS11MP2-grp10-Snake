@@ -11,6 +11,7 @@ class Segment:
 
 	def __init__(self,x,y,direction):
 
+		#Currently still called red for no real reason. Just fix later
 		red = pyglet.image.load('square.png')
 		red.width = 40
 		red.height = 40

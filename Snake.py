@@ -23,7 +23,7 @@ class Snake:
 		segBatch
 	'''
 
-	def __init__(self,name,x,y,playerType):
+	def __init__(self,name,x,y,direction,playerType):
 
 
 		head = pyglet.image.load('head.png')
@@ -35,11 +35,11 @@ class Snake:
 		self.playerType = playerType
 		self.playerName = name
 		self.length = 7
-		self.direction = 1
+		self.direction = direction
 		self.positionX = x
 		self.positionY = y
 		self.squaresoccupied = list()
-		self.score = int()
+		self.score = 0
 		self.moveQueue = list()
 
 		self.segments = list()
@@ -47,8 +47,8 @@ class Snake:
 		self.snakeSprite = pyglet.sprite.Sprite(head)
 
 		for i in range(self.length):
-			self.squaresoccupied.append(tuple((x,y+i)))
-			self.segments.append(Seg.Segment(340+(x*40),60+(y*40)+(i*40),self.direction,self.playerType))
+			self.squaresoccupied.append(tuple((x,y+(i*self.direction))))
+			self.segments.append(Seg.Segment(340+(x*40),60+(y*40)+(i*40*self.direction),self.direction,self.playerType))
 
 		for element in self.segments:
 			element.segmentSprite.batch = self.segBatch

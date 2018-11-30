@@ -34,10 +34,13 @@ def checkCollision(snakeObject,otherSnakeObject = None):
 		if (snakeObject.positionX,snakeObject.positionY) in otherSnakeObject.squaresoccupied:
 			print(otherSnakeObject.playerName + " wins")
 			return True
+		elif snakeObject.squaresoccupied[0] in otherSnakeObject.squaresoccupied:
+			print(otherSnakeObject.playerName + " wins")
+			return True
 	else:
 		return False
 
-def checkFood(snakeObject):
+def checkFood(snakeObject,otherSnakeObject=None):
 	'''
 	Checks if the head of a snake passes over food, and if it does, calls the 
 	eat functino and creates a new random location for the food. Note, still need
@@ -46,17 +49,27 @@ def checkFood(snakeObject):
 	if snakeObject.positionX == food[0] and snakeObject.positionY == food[1]:
 		#return True
 		snakeObject.eat()
-		makeFood(snakeObject)
 
-def makeFood(snakeObject):
+		if otherSnakeObject != None:
+			makeFood(snakeObject,otherSnakeObject)
+		else:
+			makeFood(snakeObject)
+		return True
+
+def makeFood(snakeObject,otherSnakeObject=None):
 	'''
 	Sets the coordinates of food.
 	'''
 	global food
 	temp = tuple((random.randint(0,n-1),random.randint(0,n-1)))
 
-	while temp in snakeObject.squaresoccupied:
-		temp = tuple((random.randint(0,n-1),random.randint(0,n-1)))
+	if otherSnakeObject != None:
+		while temp in snakeObject.squaresoccupied or temp in otherSnakeObject.squaresoccupied:
+			temp = tuple((random.randint(0,n-1),random.randint(0,n-1)))
+	else:
+		while temp in snakeObject.squaresoccupied:
+			temp = tuple((random.randint(0,n-1),random.randint(0,n-1)))
+
 
 	food = temp
 

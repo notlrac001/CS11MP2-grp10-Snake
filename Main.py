@@ -10,7 +10,7 @@ window = pyglet.window.Window(width, height, resizable=False)
 name = 'Arial Black'
 color1 = (130,255,220,255) #Light blue
 color2 = (0,242,255,255) # blue of player 1
-color3 = (252,216,13,255) #orange of player 2
+color3 = (252,216,13,255) # orange of player 2
 
 button = 1
 
@@ -28,41 +28,46 @@ food.anchor_x = 20
 food.anchor_y = 20
 foodSprite = pyglet.sprite.Sprite(food)
 
-# instead of using a label class everytime,
-# a function for labels is made to define some attributes
-# that will be used for all labels
-def label(l,s,x,y,c=None):
-
-    # c is optional argument, can use it to change font color, but there is a default color.
-
-    if c != None:
-        return pyglet.text.Label(l, font_name=name, font_size=s, color=c, anchor_x='center', anchor_y='center', x=x, y=y)
-    else:
-        return pyglet.text.Label(l, font_name=name, font_size=s, color=(color1), anchor_x='center', anchor_y='center', x=x, y=y)
-
-# a function for hovers is made
-# to set some attributes and properties
-# that will be used by all hovers
-def hover(x,y):
-    a = pyglet.sprite.Sprite(pyglet.image.load('hover.png'), x=x, y=y)
-    a.scale = 0.5
-    a.opacity = 75
-    return a
-
+# some set positions
 centerx = width//2
 leftx = width//4
 rightx = width*3//4
 leftgridx = gridSprite.x//2
 rightgridx = (gridSprite.width + 320) + ((width-(gridSprite.width + gridSprite.x))//2)
 
-''' Start of 1 Player Mode '''
+def label(l,s,x,y,c=None):
+    '''
+        Instead of using a label class everytime,
+        a function for labels is made to define some attributes
+        that will be used for all labels
+    '''
+    # c is optional argument, can use it to change font color, but there is a default color.
+    if c != None:
+        return pyglet.text.Label(l, font_name=name, font_size=s, color=c, anchor_x='center', anchor_y='center', x=x, y=y)
+    else:
+        return pyglet.text.Label(l, font_name=name, font_size=s, color=(color1), anchor_x='center', anchor_y='center', x=x, y=y)
+
+
+def hover(x,y):
+    '''
+        A function for hovers is made
+        to set some attributes and properties
+        that will be used by all hovers
+    '''
+    a = pyglet.sprite.Sprite(pyglet.image.load('hover.png'), x=x, y=y)
+    a.scale = 0.5
+    a.opacity = 75
+    return a
+
 def oneplayermode():
-    '''
-        Insert block comment here describing this function
-    '''
     
+    '''
+        Start of 1 Player Mode
+    '''
+
+    # initial acceleration will be 1/7 seconds
     global a
-    a = 7 #initial inverse acceleration (1/7 seconds)
+    a = 7
     
     player1 = S.Snake("Player 1",1,8,1,1)
     title = label('Player 1 Score:',20,leftgridx,height*0.8,color2)
@@ -80,13 +85,12 @@ def oneplayermode():
     @window.event
     def on_key_press(symbol, modifiers):
         '''
-        Insert block comment here describing this function
+        Performs an action on Player1 Snake
+        when one of the W, A, S, D keys is pressed
         '''
-
 	#Move queue variable of the player is used to regulate what happens
 	#if multiple keys are pressed before a redraw. Keeps last 3 presses
 	#and does them in the consecutive calls of updatePos
-
         if len(player1.moveQueue) <= 3:
             if symbol == key.D:
                 player1.moveQueue.insert(0,2)
@@ -101,15 +105,23 @@ def oneplayermode():
 
     def opener(dt):
         '''
-        Insert block comment here describing this function
+        This function does nothing
+        But is added in order to open the window in 1/60 seconds
         '''
-
         todo = 'nothing'
-        pyglet.clock.unschedule(opener)
+
+    def acceleration(dt):
+        '''
+        Increases the speed of game
+        '''
+        global a
+        a += 0.5
+        print('a=1/',a)
         
     def updatePos(dt):
         '''
-        Insert block comment here describing this function
+        Updates the snake's segments' positions and its food
+        Ends if the snake has collided somewhere
         '''
         global scr1, a
         if len(player1.moveQueue) > 0:
@@ -127,9 +139,8 @@ def oneplayermode():
     @window.event
     def on_draw():
         '''
-        Insert block comment here describing this function
+        Draws everything needed to be displayed for the 1 Player Game Window
         '''
-
         window.clear()
         gridSprite.draw()
         player1.segBatch.draw()
@@ -146,15 +157,6 @@ def oneplayermode():
         controlS.draw()
         controlA.draw()
         controlD.draw()
-
-    def acceleration(dt):
-        '''
-        Insert block comment here describing this function
-        '''
-
-        global a
-        a += 0.5
-        print('a=1/',a)
         
     pyglet.clock.schedule_interval(updatePos, 1/a)
     pyglet.clock.schedule_interval(acceleration,5)
@@ -162,12 +164,15 @@ def oneplayermode():
     pyglet.app.run()
 
 def twoplayermode():
-    '''
-        Insert block comment here describing this function
-    '''
     
+    '''
+        Start of 2 Player Battle Game
+    '''
+
+    # initial acceleration will be 1/7 seconds
     global a
     a = 7
+    
     #Creates 2 players.
     player1 = S.Snake("Player 1",1,8,1,1)
     player2 = S.Snake("Player 2",14,7,-1,2)
@@ -197,13 +202,12 @@ def twoplayermode():
     @window.event
     def on_key_press(symbol, modifiers):
         '''
-        Insert block comment here describing this function
+        Performs an action on Player1 Snake
+        when one of the W, A, S, D keys is pressed
         '''
-
         #Move queue variable of the player is used to regulate what happens
         #if multiple keys are pressed before a redraw. Keeps last 3 presses
         #and does them in the consecutive calls of updatePos
-
         if len(player1.moveQueue) <= 3:
             if symbol == key.D:
                 player1.moveQueue.insert(0,2)
@@ -213,7 +217,11 @@ def twoplayermode():
                 player1.moveQueue.insert(0,-1)
             elif symbol == key.S:
                 player1.moveQueue.insert(0,1)
-
+                
+        '''
+        Performs an action on Player2 Snake
+        when one of the UP, DOWN, LEFT, RIGHT keys is pressed
+        '''
         if len(player2.moveQueue) <= 3:
             if symbol == key.RIGHT:
                 player2.moveQueue.insert(0,2)
@@ -228,18 +236,26 @@ def twoplayermode():
 
     def opener(dt):
         '''
-        Insert block comment here describing this function
+        This function does nothing
+        but is added in order to open the window in 1/60 seconds
         '''
         todo = 'nothing'
 
+    def acceleration(dt):
+        '''
+        Increases the speed of game
+        '''
+        global a
+        a += 0.5
+        print('a=1/',a)
+
     def updatePos(dt):
         '''
-        Insert block comment here describing this function
+        Updates the snake's segments' positions and its food
+        Ends if the snake has collided somewhere
         '''
-
         done = False
         win = 0
-
 
         if len(player1.moveQueue) > 0:
             player1.setDirection(player1.moveQueue.pop())
@@ -251,7 +267,6 @@ def twoplayermode():
         player1.snakeSprite.x = E.translatePositionX(player1.positionX)
         player1.snakeSprite.y = E.translatePositionY(player1.positionY)
         score1.text = str(player1.score)
-
 
         if len(player2.moveQueue) > 0:
             player2.setDirection(player2.moveQueue.pop())
@@ -266,7 +281,6 @@ def twoplayermode():
 
         # Let all moving code happen first before checking collisions to prevent
         # unwanted effects
-
         if E.checkCollision(player1,player2):
             win += 2
             done = True
@@ -276,7 +290,6 @@ def twoplayermode():
             done = True
             
         if done:
-
             if win == 1:
                 if player2.score > 5:
                     player2.score = player2.score - 5
@@ -288,9 +301,8 @@ def twoplayermode():
     @window.event
     def on_draw():
         '''
-        Insert block comment here describing this function
+        Draws everything needed to be displayed for the 2 Player Game Window
         '''
-
         window.clear()
         gridSprite.draw()
         player1.segBatch.draw()
@@ -318,15 +330,6 @@ def twoplayermode():
         controlDown.draw()
         controlLeft.draw()
         controlRight.draw()
-
-    def acceleration(dt):
-        '''
-        Insert block comment here describing this function
-        '''
-
-        global a
-        a += 0.5
-        print('a=1/',a)
         
     pyglet.clock.schedule_interval(updatePos, 1/a)
     pyglet.clock.schedule_interval(acceleration,5)
@@ -335,7 +338,10 @@ def twoplayermode():
     
 def p1gameover(scr):
     '''
-        Insert block comment here describing this function
+        Game Over Window for the 1 Player Game
+        
+        Displays GAME OVER, the Score of Player1
+        And 2 Buttons that lead to Main Menu and Quit
     '''
     
     title = label('GAME OVER',60,width//2,height*0.8)
@@ -351,7 +357,10 @@ def p1gameover(scr):
     @window.event
     def on_key_press(symbol, modifiers):
         '''
-        Insert block comment here describing this function
+        Moves the hover through the buttons
+        when the LEFT or RIGHT keys are pressed
+        then moves to Main Menu or Quit
+        when ENTER is pressed
         '''
         global button
         pyglet.clock.set_fps_limit(60)
@@ -371,14 +380,15 @@ def p1gameover(scr):
 
     def opener(dt):
         '''
-        Insert block comment here describing this function
+        This function does nothing
+        But is added in order to open the window in 1/60 seconds
         '''
         todo = 'nothing'
 
     @window.event
     def on_draw():
         '''
-        Insert block comment here describing this function
+        Draws everything needed to be displayed for the 1 Player Game Over Window
         '''
         window.clear()
         title.draw()
@@ -392,7 +402,10 @@ def p1gameover(scr):
     
 def p2gameover(win,scr1,scr2):
     '''
-        Insert block comment here describing this function
+        Game Over Window for the 2 Player Game
+        
+        Displays GAME OVER, the Winner of the Game
+        and 2 Buttons that lead to Main Menu and Quit
     '''
 
     if win == 1:
@@ -414,7 +427,10 @@ def p2gameover(win,scr1,scr2):
     @window.event
     def on_key_press(symbol, modifiers):
         '''
-        Insert block comment here describing this function
+        Moves the hover through the buttons
+        when the LEFT or RIGHT keys are pressed
+        then moves to Main Menu or Quit
+        when ENTER is pressed
         '''
         global button
         pyglet.clock.set_fps_limit(60)
@@ -434,14 +450,15 @@ def p2gameover(win,scr1,scr2):
 
     def opener(dt):
         '''
-        Insert block comment here describing this function
+        This function does nothing
+        but is added in order to open the window in 1/60 seconds
         '''
         todo = 'nothing'
 
     @window.event
     def on_draw():
         '''
-        Insert block comment here describing this function
+        Draws everything needed to be displayed for the 2 Player Game Over Window
         '''
         window.clear()
         title.draw()
@@ -455,14 +472,15 @@ def p2gameover(win,scr1,scr2):
 
 def savetostats(score):
     '''
-        Insert block comment here describing this function
+        Saves Score to Stats file (snakescores.txt)
+        Only the Top 5 Scores are saved
     '''
-    
     try:
         file = open('snakescores.txt','r')
     except FileNotFoundError:
         file = open('snakescores.txt','w+')
         file.write(str(int(score)))
+        file.close()
     else:
         if file.read() == '':
             file = open('snakescores.txt','w')
@@ -490,9 +508,10 @@ def savetostats(score):
                 file.write(scores[i]+'\n')
             file.close()
                 
-def statistics():
+def highscores():
     '''
-        Insert block comment here describing this function
+        Displays the High Scores of the 1 Player Game
+        Only the Top 5 Scores are displayed
     '''
 
     results = ['','','','','','']
@@ -532,16 +551,19 @@ def statistics():
 
     def opener(dt):
         '''
-        Insert block comment here describing this function
+        This function does nothing
+        But is added in order to open the window in 1/60 seconds
         '''
         todo = 'nothing'
     
     @window.event
     def on_key_press(symbol, modifiers):
         '''
-        Insert block comment here describing this function
+        Moves the hover through the buttons
+        when the LEFT or RIGHT keys are pressed
+        then moves to Back to Main Menu or Quit
+        when ENTER is pressed
         '''
-
         global button
         pyglet.clock.set_fps_limit(60)
         if symbol == key.LEFT:
@@ -565,14 +587,14 @@ def statistics():
                 file = open('snakescores.txt','w')
                 file.write('')
                 file.close()
-                statistics()
+                highscores()
             elif button == 3:
                 window.close()
 
     @window.event
     def on_draw():
         '''
-        Insert block comment here describing this function
+        Draws everything needed to be displayed for the High Score Window
         '''
         window.clear()
         title.draw()
@@ -592,18 +614,32 @@ def statistics():
 
 def mainmenu():
     '''
-        Insert block comment here describing this function
+        The first window to be displayed when the game is opened
+        is the Main Menu
+        Here, you can see the title of the game and 4 buttons:
+        1 Player, 2 Player Battle, High Score, Quit
     '''
 
-    title = label('SNAKES',60,width//2,height*0.8)
-    p1label = label('1 Player',30,width//4,height//2)
-    p2label = label('2 Player',25,width*3//4,height*0.52)
-    p2minilabel = label('Battle',15,width*3//4,height*0.47)
-    statlabel = label('High Score',30,width//2,height*0.35)
-    statminilabel = label('For 1 Player Mode Only',10,width//2,height*0.3)
-    qlabel = label('Quit',30,width//2,height*0.2)
+    title = label('SNAKES',60,centerx,height*0.85)
+    p1label = label('1 Player',30,leftx,height*0.65)
+    p2label = label('2 Player',25,rightx,height*0.663)
+    p2minilabel = label('Battle',15,rightx,height*0.613)
+    statlabel = label('High Score',30,centerx,height*0.5)
+    statminilabel = label('For 1 Player Mode Only',10,centerx,height*0.45)
+    htplabel = label('How to Play',30,centerx,height*0.35)
+    qlabel = label('Quit',30,centerx,height*0.2)
 
-    hover0 = hover((width//4)-(hoverwidth//2),(height//2)-(hoverheight//2)-9)
+    black = (0,0,0,0)
+    htp101 = pyglet.text.Label('PLAY 1 Player Game\n\nYour objective, as the snake, is to eat the square and continue growing\n-----\nDo not collide with yourself nor the border of the grid',
+                               font_name=name,font_size=15,color=black,
+                               x=width*0.02,y=height*0.5,
+                               multiline=True,width=width*0.3)
+    htp201 = pyglet.text.Label('PLAY 2 Player Game\n\nYour objective, as the snake, is to survive longer than the other player\nYou can still eat the square and continue growing\n-----\nDo not collide with yourself, the border of the grid nor the other player',
+                               font_name=name,font_size=15,color=black,
+                               x=width*0.69,y=height*0.5,
+                               multiline=True,width=width*0.3)
+
+    hover0 = hover((width//4)-(hoverwidth//2),(height*0.65)-(hoverheight//2)-9)
 
     global button
     button = 1
@@ -611,72 +647,91 @@ def mainmenu():
     @window.event
     def on_key_press(symbol, modifiers):
         '''
-        Insert block comment here describing this function
+        Moves the hover through the buttons
+        when the UP, DOWN, LEFT, RIGHT keys are pressed
+        then performs the function of the button
+        where ENTER is pressed
         '''
-        
         global button
         
-        if symbol == key.LEFT:
+        if symbol == key.LEFT or symbol == key.A:
             if button == 2:
                 button = 1
                 hover0.x = (width//4) - (hoverwidth//2)
-                hover0.y = (height//2) - (hoverheight//2) - 9
-        elif symbol == key.RIGHT:
+                hover0.y = (height*0.65) - (hoverheight//2) - 9
+        elif symbol == key.RIGHT or symbol == key.D:
             if button == 1:
                 button = 2
                 hover0.x = (width*3//4) - (hoverwidth//2)
-                hover0.y = (height//2) - (hoverheight//2) - 9
-        elif symbol == key.DOWN:
+                hover0.y = (height*0.65) - (hoverheight//2) - 9
+        elif symbol == key.DOWN or symbol == key.S:
             if button == 1 or button == 2:
                 button = 3
                 hover0.x = (width//2) - (hoverwidth//2)
-                hover0.y = (height*0.35) - (hoverheight//2) - 15
+                hover0.y = (height*0.5) - (hoverheight//2) - 15
             elif button == 3:
                 button = 4
                 hover0.x = (width//2) - (hoverwidth//2)
+                hover0.y = (height*0.35) - (hoverheight//2) - 9
+            elif button == 4:
+                button = 5
+                hover0.x = (width//2) - (hoverwidth//2)
                 hover0.y = (height*0.2) - (hoverheight//2) - 8
-        elif symbol == key.UP:
-            if button == 4:
+        elif symbol == key.UP or symbol == key.W:
+            if button == 5:
+                button = 4
+                hover0.x = (width//2) - (hoverwidth//2)
+                hover0.y = (height*0.35) - (hoverheight//2) - 9
+            elif button == 4:
                 button = 3
                 hover0.x = (width//2) - (hoverwidth//2)
-                hover0.y = (height*0.35) - (hoverheight//2) - 15
+                hover0.y = (height*0.5) - (hoverheight//2) - 15
             elif button == 3:
                 button = 1
                 hover0.x = (width//4) - (hoverwidth//2)
-                hover0.y = (height//2) - (hoverheight//2) - 9
+                hover0.y = (height*0.65) - (hoverheight//2) - 9
         elif symbol == key.ENTER:
             if button == 1:
                 oneplayermode()
             elif button == 2:
                 twoplayermode()
             elif button == 3:
-                statistics()
-            elif button == 4:
+                highscores()
+            elif button == 5:
                 window.close()
+        if button == 4:
+            htp101.color = color2
+            htp201.color = color2
+        else:
+            htp101.color = black
+            htp201.color = black
 
     def opener(dt):
         '''
-        Insert block comment here describing this function
+        This function does nothing
+        But is added in order to open the window in 1/60 seconds
         '''
         todo = 'nothing'
 
     @window.event
     def on_draw():
         '''
-        Insert block comment here describing this function
+        Draws everything needed to be displayed for the Main Menu Window
         '''
         window.clear()
         title.draw()
         p1label.draw()
         p2label.draw()
         p2minilabel.draw()
+        htplabel.draw()
         statlabel.draw()
         statminilabel.draw()
         qlabel.draw()
         hover0.draw()
+        htp101.draw()
+        htp201.draw()
 
     pyglet.clock.schedule_once(opener, 1/60)
     pyglet.app.run()
 
 mainmenu()
-
